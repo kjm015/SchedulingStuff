@@ -77,6 +77,23 @@ void completeBurst(Process *&moveProcess, History moveProcessHistory, unsigned &
     }
 }
 
+void setProcess(Process *process, const char *line) {
+    char buffer[256];
+    string processName;
+    char *data;
+
+    strcpy(buffer, line);
+
+    processName = strtok(buffer, " ");
+    process->setProcessName(processName);
+
+    data = strtok(nullptr, " ");
+    process->setPriority(static_cast<unsigned int>(atoi(data)));
+
+    data = strtok(nullptr, " ");
+    process->setArrivalTime(static_cast<unsigned int>(atoi(data)));
+}
+
 void setProcessHistory(Process *process, const char *line) {
     char buffer[256];
     int index = 0;
@@ -119,7 +136,7 @@ void readFile() {
 
     getline(inFile, line);
     while (inFile) {
-        auto *temp = new Process();
+        Process *temp = new Process();
         temp->setProcessId(startId);
 
         setProcess(temp, line.c_str());
@@ -241,3 +258,4 @@ void printReport() {
 
     cerr << endl << "<----------------------------------------->" << endl;
 }
+

@@ -16,6 +16,11 @@ const unsigned QUEUE_SIZE = 20;
 const unsigned AT_ONCE = 5;
 const unsigned HOW_OFTEN = 25;
 
+const char *IN_FILE_NAME = "data4.txt";
+const char *INPUT_BURST_LETTER = "I";
+const char *OUTPUT_BURST_LETTER = "O";
+const char *END_OF_FILE_MARKER = "STOPHERE";
+
 class Comparator {
 public:
     bool operator()(Process *left, Process *right) {

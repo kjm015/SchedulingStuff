@@ -93,8 +93,6 @@ public:
 
     void setProcessId(int processId);
 
-    History *getHistory() const;
-
     unsigned int getSub() const;
 
     void setSub(unsigned int sub);
@@ -127,10 +125,6 @@ int Process::getProcessId() const {
 
 void Process::setProcessId(int processId) {
     Process::processId = processId;
-}
-
-const History *Process::getHistory() const {
-    return history;
 }
 
 unsigned int Process::getSub() const {

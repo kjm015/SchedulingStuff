@@ -124,19 +124,26 @@ void setProcessHistory(Process *process, const char *line) {
 
     strcpy(buffer, line);
 
+    cerr << "\tSetting temporary process history structure!" << endl;
     History *temp = process->history;
 
+    cerr << "\tTokenizing buffer!" << endl;
     char *burstInfo = strtok(buffer, " ");
 
     while (burstInfo != nullptr) {
+        cerr << "\t\tReading burst info!" << endl;
+
+        cerr << "\t\tCreating temporary History and assigning burst info letter" << endl;
         auto *temp2 = new History();
         temp2->burstLetter = burstInfo;
 
+        cerr << "\t\tTokenizing burst info and assigning burst value to it" << endl;
         burstInfo = strtok(nullptr, " ");
         temp2->burstValue = static_cast<unsigned int>(atoi(burstInfo));
 
         burstInfo = strtok(nullptr, " ");
 
+        cerr << "\t\tSetting element of temporary history element with the other temporary history!" << endl;
         temp[index] = *temp2;
         index++;
     }
@@ -152,40 +159,40 @@ void readFile() {
 
     ifstream inFile(IN_FILE_NAME);
 
-    cerr << "I retrieved the infile name!" << endl;
+    cerr << "\tI retrieved the infile name!" << endl;
 
     if (inFile.fail()) {
-        cerr << "Could not open input text file!" << endl;
+        cerr << "\tCould not open input text file!" << endl;
         return;
     }
 
     getline(inFile, line);
     while (inFile) {
-        cerr << "I'm reading the file!" << endl;
+        cerr << "\t\tI'm reading the file!" << endl;
 
         auto *temp = new Process();
         temp->setProcessId(startId);
 
-        cerr << "I'm about to set the current process!" << endl;
+        cerr << "\t\tI'm about to set the current process!" << endl;
         setProcess(temp, line.c_str());
 
         if (temp->getProcessName() == END_OF_FILE_MARKER) {
-            cerr << "Reached end of file!" << endl;
+            cerr << "\t\tReached end of file!" << endl;
             delete temp;
             break;
         }
 
-        cerr << "Pushing new process into the entry queue!" << endl;
+        cerr << "\t\tPushing new process into the entry queue!" << endl;
         entryQueue.push(temp);
 
-        // TODO: The program segmentation faults here. Fix this!
-        cerr << "Getting the next line!" << endl;
+        cerr << "\t\tGetting the next line!" << endl;
         getline(inFile, line);
 
-        cerr << "Setting the process history for this process!" << endl;
+        // TODO: The program segmentation faults here. Fix this!
+        cerr << "\t\tSetting the process history for this process!" << endl;
         setProcessHistory(temp, line.c_str());
     }
-    cerr << "I'm closing the file!" << endl;
+    cerr << "\tI'm closing the file!" << endl;
     inFile.close();
 }
 

@@ -29,8 +29,6 @@ private:
 
     unsigned sub = 0;
 
-    unsigned int cpuTimer = 0;
-
     unsigned int ioTimer = 0;
 
     unsigned int cpuTotal = 0;
@@ -47,6 +45,7 @@ private:
 
 public:
     History history[ARRAY_SIZE];
+    unsigned int cpuTimer = 0;
 
     void printInfo();
 
@@ -54,7 +53,7 @@ public:
 
     unsigned int getPriority() const;
 
-    unsigned int getCpuTimer() const;
+    unsigned int getCpuTimer();
 
     void setCpuTimer(unsigned int cpuTimer);
 
@@ -150,7 +149,7 @@ void Process::setPriority(unsigned int priority) {
     Process::priority = priority;
 }
 
-unsigned int Process::getCpuTimer() const {
+unsigned int Process::getCpuTimer() {
     return cpuTimer;
 }
 

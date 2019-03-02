@@ -36,7 +36,7 @@ int main() {
         } else {
             History current = getProcessHistory(activeProcess);
             moveToQueue(activeProcess, current.burstLetter, false);
-            completeBurst(activeProcess, current, activeProcess->getCpuTimer(), activeProcessCount, false);
+            completeBurst(activeProcess, current, activeProcess->cpuTimer, activeProcessCount, false);
         }
 
     }
@@ -44,21 +44,21 @@ int main() {
 }
 
 void completeBurst(Process *&moveProcess, History moveProcessHistory, unsigned &proTimer, int &processesInUse,
-                   bool isBurst) {
+                   bool isIoBurst) {
     // TODO: Refactor this to use class variables rather than reference calls
     if (moveProcess != nullptr) {
         if (proTimer == moveProcessHistory.burstValue) {
             proTimer = 0;
             moveProcess->setSub(moveProcess->getSub() + 1);
         }
-        if (isBurst) {
+        if (isIoBurst) {
             if (moveProcessHistory.burstLetter == "I") {
                 moveProcess->setInputCount(moveProcess->getInputTotal() + 1);
             } else if (moveProcessHistory.burstLetter == "O") {
                 moveProcess->setOutputCount(moveProcess->getOutputCount() + 1);
             }
             // TODO: refactor this so that we don't need the isBurst argument
-            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isBurst);
+            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isIoBurst);
 
             // TODO: Restructure this method so that we don't exit early
             return;
@@ -72,7 +72,7 @@ void completeBurst(Process *&moveProcess, History moveProcessHistory, unsigned &
             processesInUse--;
         } else {
             moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
-            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isBurst);
+            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isIoBurst);
         }
     }
 }
@@ -162,7 +162,7 @@ bool condition(int time) {
 }
 
 void activateProcess(Process *&process, priority_queue<Process *, vector<Process *>, Comparator> &activatorQueue) {
-    if (process == nullptr and activatorQueue.size() > 0) {
+    if (process == nullptr and !activatorQueue.empty()) {
         process = activatorQueue.top();
         activatorQueue.pop();
     }

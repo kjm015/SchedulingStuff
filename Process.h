@@ -47,15 +47,13 @@ public:
     History history[ARRAY_SIZE];
     unsigned int cpuTimer = 0;
 
+    ~Process();
+
     void printInfo();
 
     const string &getProcessName() const;
 
     unsigned int getPriority() const;
-
-    unsigned int getCpuTimer();
-
-    void setCpuTimer(unsigned int cpuTimer);
 
     unsigned int getIoTimer() const;
 
@@ -143,14 +141,6 @@ void Process::setPriority(unsigned int priority) {
     Process::priority = priority;
 }
 
-unsigned int Process::getCpuTimer() {
-    return cpuTimer;
-}
-
-void Process::setCpuTimer(unsigned int cpuTimer) {
-    Process::cpuTimer = cpuTimer;
-}
-
 unsigned int Process::getIoTimer() const {
     return ioTimer;
 }
@@ -221,6 +211,10 @@ void Process::printInfo() {
     cerr << "Time spent waiting: "
          << (timer - this->getArrivalTime() - this->getCpuTotal() - this->getOutputTotal() - this->getInputTotal())
          << endl;
+}
+
+Process::~Process() {
+    delete this;
 }
 
 #endif //ASSIGN4_PROCESS_H

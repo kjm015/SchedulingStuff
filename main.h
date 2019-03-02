@@ -7,6 +7,7 @@
 
 #include <queue>
 #include <fstream>
+#include <cstring>
 #include "Process.h"
 
 using namespace std;
@@ -38,7 +39,7 @@ void printPriorityQueue(priority_queue<Process *, vector<Process *>, Comparator>
 
 void printReport();
 
-void moveToQueue(Process *&, string, bool);
+void moveToQueue(Process *&, const string &, bool);
 
 void completeBurst(Process *&, History, unsigned &, int &, bool);
 
@@ -67,36 +68,35 @@ int terminatedProcessCount = 0;
 unsigned timer = 0;
 
 
-void completeBurst(Process *&moveProcess, History moveProcessHistory, unsigned &proTimer, int &processesInUse,
-                   bool isIoBurst) {
+void completeBurst(Process *&moveProcess, History history, unsigned &proTimer, int &processesInUse, bool isIoBurst) {
     // TODO: Refactor this to use class variables rather than reference calls
     if (moveProcess != nullptr) {
-        if (proTimer == moveProcessHistory.burstValue) {
+        if (proTimer == history.burstValue) {
             proTimer = 0;
             moveProcess->setSub(moveProcess->getSub() + 1);
         }
         if (isIoBurst) {
-            if (moveProcessHistory.burstLetter == INPUT_BURST_LETTER) {
+            if (history.burstLetter == INPUT_BURST_LETTER) {
                 moveProcess->setInputCount(moveProcess->getInputTotal() + 1);
-            } else if (moveProcessHistory.burstLetter == OUTPUT_BURST_LETTER) {
+            } else if (history.burstLetter == OUTPUT_BURST_LETTER) {
                 moveProcess->setOutputCount(moveProcess->getOutputCount() + 1);
             }
             // TODO: refactor this so that we don't need the isBurst argument
-            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isIoBurst);
+            moveToQueue(moveProcess, history.burstLetter, isIoBurst);
 
             // TODO: Restructure this method so that we don't exit early
             return;
         }
 
-        moveProcessHistory = getProcessHistory(moveProcess);
+        history = getProcessHistory(moveProcess);
 
-        if (moveProcessHistory.burstLetter == "N") {
+        if (history.burstLetter == "N") {
             moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
             terminateProcess(moveProcess);
             processesInUse--;
         } else {
             moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
-            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isIoBurst);
+            moveToQueue(moveProcess, history.burstLetter, isIoBurst);
         }
     }
 }
@@ -150,7 +150,6 @@ void readFile() {
     string line;
     int startId = 100;
 
-    // TODO: replace with global constant
     ifstream inFile(IN_FILE_NAME);
 
     if (inFile.fail()) {
@@ -160,16 +159,13 @@ void readFile() {
 
     getline(inFile, line);
     while (inFile) {
-        Process *temp = new Process();
+        auto *temp = new Process();
         temp->setProcessId(startId);
 
         setProcess(temp, line.c_str());
 
-        // TODO: replace with strcmp and string constant
         if (temp->getProcessName() == END_OF_FILE_MARKER) {
-            // TODO: add destructor to Process and call it here
-            delete (temp);
-            temp = nullptr;
+            temp->~Process();
             break;
         }
 
@@ -186,7 +182,6 @@ void terminateProcess(Process *&terminator) {
     terminator->printInfo();
     terminatedProcessCount++;
 
-    // TODO: use process destructor here
     delete terminator;
     terminator = nullptr;
 }
@@ -209,11 +204,10 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
     }
 }
 
-void moveToQueue(Process *&currentProcess, string queueName, bool readied) {
+void moveToQueue(Process *&currentProcess, const string &queueName, bool readied) {
     if (readied) {
         readyQueue.push(currentProcess);
     } else if (queueName == OUTPUT_BURST_LETTER) {
-        // TODO: replace queue name comparator with constant string and strcmp()
         outputQueue.push(currentProcess);
     } else if (queueName == INPUT_BURST_LETTER) {
         inputQueue.push(currentProcess);

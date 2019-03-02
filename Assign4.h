@@ -178,8 +178,11 @@ void readFile() {
         cerr << "Pushing new process into the entry queue!" << endl;
         entryQueue.push(temp);
 
-        cerr << "Getting the next line and setting the process history!" << endl;
+        // TODO: The program segmentation faults here. Fix this!
+        cerr << "Getting the next line!" << endl;
         getline(inFile, line);
+
+        cerr << "Setting the process history for this process!" << endl;
         setProcessHistory(temp, line.c_str());
     }
     cerr << "I'm closing the file!" << endl;

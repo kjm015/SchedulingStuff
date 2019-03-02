@@ -27,8 +27,6 @@ private:
 
     int processId;
 
-    History history[ARRAY_SIZE];
-
     unsigned sub = 0;
 
     unsigned int cpuTimer = 0;
@@ -48,6 +46,8 @@ private:
     unsigned int outputCount = 0;
 
 public:
+    History history[ARRAY_SIZE];
+
     void printInfo();
 
     const string &getProcessName() const;
@@ -94,7 +94,7 @@ public:
 
     void setProcessId(int processId);
 
-    const History *getHistory() const;
+    History *getHistory() const;
 
     unsigned int getSub() const;
 

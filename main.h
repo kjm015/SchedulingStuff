@@ -29,7 +29,7 @@ void printProcessContent();
 
 void printQueueContent(queue<Process *>);
 
-void printPriorityQueue(priority_queue<Process *>, vector<Process *>, Comparator);
+void printPriorityQueue(priority_queue<Process *, vector<Process *>, Comparator>);
 
 void printReport();
 

@@ -152,6 +152,8 @@ void readFile() {
 
     ifstream inFile(IN_FILE_NAME);
 
+    cerr << "I retrieved the infile name!" << endl;
+
     if (inFile.fail()) {
         cerr << "Could not open input text file!" << endl;
         return;
@@ -159,21 +161,28 @@ void readFile() {
 
     getline(inFile, line);
     while (inFile) {
+        cerr << "I'm reading the file!" << endl;
+
         auto *temp = new Process();
         temp->setProcessId(startId);
 
+        cerr << "I'm about to set the current process!" << endl;
         setProcess(temp, line.c_str());
 
         if (temp->getProcessName() == END_OF_FILE_MARKER) {
-            temp->~Process();
+            cerr << "Reached end of file!" << endl;
+            delete temp;
             break;
         }
 
+        cerr << "Pushing new process into the entry queue!" << endl;
         entryQueue.push(temp);
 
+        cerr << "Getting the next line and setting the process history!" << endl;
         getline(inFile, line);
         setProcessHistory(temp, line.c_str());
     }
+    cerr << "I'm closing the file!" << endl;
     inFile.close();
 }
 

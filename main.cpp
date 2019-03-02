@@ -52,9 +52,9 @@ void completeBurst(Process *&moveProcess, History moveProcessHistory, unsigned &
             moveProcess->setSub(moveProcess->getSub() + 1);
         }
         if (isIoBurst) {
-            if (moveProcessHistory.burstLetter == "I") {
+            if (moveProcessHistory.burstLetter == INPUT_BURST_LETTER) {
                 moveProcess->setInputCount(moveProcess->getInputTotal() + 1);
-            } else if (moveProcessHistory.burstLetter == "O") {
+            } else if (moveProcessHistory.burstLetter == OUTPUT_BURST_LETTER) {
                 moveProcess->setOutputCount(moveProcess->getOutputCount() + 1);
             }
             // TODO: refactor this so that we don't need the isBurst argument
@@ -110,7 +110,7 @@ void readFile() {
     int startId = 100;
 
     // TODO: replace with global constant
-    ifstream inFile("data4.txt");
+    ifstream inFile(IN_FILE_NAME);
 
     if (inFile.fail()) {
         cerr << "Could not open input text file!" << endl;
@@ -119,13 +119,13 @@ void readFile() {
 
     getline(inFile, line);
     while (inFile) {
-        Process *temp = new Process();
+        auto *temp = new Process();
         temp->setProcessId(startId);
 
         setProcess(temp, line.c_str());
 
-        // TODO: replace with strcmp
-        if (temp->getProcessName() == "STOPHERE") {
+        // TODO: replace with strcmp and string constant
+        if (temp->getProcessName() == END_OF_FILE_MARKER) {
             // TODO: add destructor to Process and call it here
             delete (temp);
             temp = nullptr;
@@ -171,16 +171,16 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
 void moveToQueue(Process *&currentProcess, string queueName, bool readied) {
     if (readied) {
         readyQueue.push(currentProcess);
-    } else if (queueName == "O") {
+    } else if (queueName == OUTPUT_BURST_LETTER) {
         // TODO: replace queue name comparator with constant string and strcmp()
         outputQueue.push(currentProcess);
-    } else if (queueName == "I") {
+    } else if (queueName == INPUT_BURST_LETTER) {
         inputQueue.push(currentProcess);
     }
     currentProcess = nullptr;
 }
 
-void printQueue(queue<Process *> q) {
+void printQueueContent(queue<Process *> q) {
     if (q.empty()) {
         cerr << "Empty queue!" << endl;
     } else {
@@ -228,7 +228,7 @@ void printReport() {
     printProcessContent();
 
     cerr << endl << "Entry queue: ";
-    printQueue(entryQueue);
+    printQueueContent(entryQueue);
 
     cerr << endl << "Ready queue: ";
     printPriorityQueue(readyQueue);

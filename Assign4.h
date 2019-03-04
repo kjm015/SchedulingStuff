@@ -137,10 +137,10 @@ void setProcessHistory(Process *process, const char *line) {
         auto *temp2 = new History();
         temp2->burstLetter = burstInfo;
 
-        cerr << "\t\tTokenizing burst info" << endl;
+        cerr << "\t\tTokenizing burst info: " << temp2->burstLetter << endl;
         burstInfo = strtok(nullptr, " ");
 
-        cerr << "\t\tAssigning burst value to burst info" << endl;
+        cerr << "\t\tAssigning burst value to burst info: " << burstInfo << endl;
         temp2->burstValue = atoi(burstInfo);
 
         cerr << "\t\tTokenizing burst info..." << endl;

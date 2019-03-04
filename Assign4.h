@@ -108,13 +108,13 @@ void setProcess(Process *process, const char *line) {
 
     strcpy(buffer, line);
 
-    processName = strtok(buffer, " ");
+    processName = strtok(buffer, "\t");
     process->setProcessName(processName);
 
-    data = strtok(nullptr, " ");
+    data = strtok(nullptr, "\t");
     process->setPriority(static_cast<unsigned int>(atoi(data)));
 
-    data = strtok(nullptr, " ");
+    data = strtok(nullptr, "\t");
     process->setArrivalTime(static_cast<unsigned int>(atoi(data)));
 }
 

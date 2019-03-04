@@ -140,10 +140,10 @@ void setProcessHistory(Process *process, const char *line) {
         cerr << "\t\tTokenizing burst info" << endl;
         burstInfo = strtok(nullptr, " ");
 
-        cerr << "Assigning burst value to burst info" << endl;
-        temp2->burstValue = static_cast<unsigned int>(atoi(burstInfo));
+        cerr << "\t\tAssigning burst value to burst info" << endl;
+        temp2->burstValue = atoi(burstInfo);
 
-        cerr << "Tokenizing burst info..." << endl;
+        cerr << "\t\tTokenizing burst info..." << endl;
         burstInfo = strtok(nullptr, " ");
 
         cerr << "\t\tSetting element of temporary history element with the other temporary history!" << endl;

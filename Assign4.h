@@ -167,7 +167,7 @@ void readFile() {
     }
 
     getline(inFile, line);
-    while (inFile) {
+    while (!inFile.eof()) {
         cerr << "\t\tI'm reading the file!" << endl;
 
         auto *temp = new Process();

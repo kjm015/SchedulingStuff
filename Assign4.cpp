@@ -44,6 +44,8 @@ int main() {
             moveToQueue(activeProcess, current.burstLetter, false);
             completeBurst(activeProcess, current, activeProcess->cpuTimer, activeProcessCount, false);
         }
+
+        timer++;
     }
     return 0;
 }

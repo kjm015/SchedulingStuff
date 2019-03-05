@@ -181,7 +181,6 @@ void readFile() {
 
         if (temp->getProcessName() == END_OF_FILE_MARKER) {
             cerr << "\t\tReached end of file!" << endl;
-            delete temp;
             break;
         }
 

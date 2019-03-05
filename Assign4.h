@@ -29,7 +29,7 @@ public:
     }
 };
 
-bool condition(int);
+bool exitCondition(int);
 
 void printProcessContent();
 
@@ -212,15 +212,16 @@ void terminateProcess(Process *&terminator) {
     terminator = nullptr;
 }
 
-bool condition(int time) {
+bool exitCondition(int time) {
+    // TODO: inspect this exit condition for efficacy
     return (time < MAX_TIME)
-           and (!entryQueue.empty()
-                or !readyQueue.empty()
-                or !inputQueue.empty()
-                or !outputQueue.empty()
-                or activeProcess != nullptr
-                or activeInputProcess != nullptr
-                or activeOutputProcess != nullptr);
+           or (!entryQueue.empty()
+               or !readyQueue.empty()
+               or !inputQueue.empty()
+               or !outputQueue.empty()
+               or activeProcess != nullptr
+               or activeInputProcess != nullptr
+               or activeOutputProcess != nullptr);
 }
 
 void activateProcess(Process *&process, priority_queue<Process *, vector<Process *>, Comparator> &activatorQueue) {

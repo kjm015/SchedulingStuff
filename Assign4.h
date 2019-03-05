@@ -195,8 +195,10 @@ void readFile() {
         cerr << "\t\tSetting the process history for this process!" << endl;
         setProcessHistory(temp, line.c_str());
 
-        cerr << "\t\tGetting the next line again!" << endl;
-        getline(inFile, line);
+        if (!inFile.eof()) {
+            cerr << "\t\tGetting the next line again!" << endl;
+            getline(inFile, line);
+        }
     }
     cerr << "\tI'm closing the file!" << endl;
     inFile.close();

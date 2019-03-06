@@ -7,6 +7,7 @@
 
 #include <queue>
 #include <fstream>
+#include <cstring>
 #include "Process.h"
 
 using namespace std;
@@ -28,7 +29,7 @@ public:
     }
 };
 
-bool condition(int);
+bool exitCondition(int);
 
 void printProcessContent();
 
@@ -38,7 +39,7 @@ void printPriorityQueue(priority_queue<Process *, vector<Process *>, Comparator>
 
 void printReport();
 
-void moveToQueue(Process *&, string, bool);
+void moveToQueue(Process *&, const string &, bool);
 
 void completeBurst(Process *&, History, unsigned &, int &, bool);
 
@@ -67,36 +68,35 @@ int terminatedProcessCount = 0;
 unsigned timer = 0;
 
 
-void completeBurst(Process *&moveProcess, History moveProcessHistory, unsigned &proTimer, int &processesInUse,
-                   bool isIoBurst) {
+void completeBurst(Process *&moveProcess, History history, unsigned &proTimer, int &processesInUse, bool isIoBurst) {
     // TODO: Refactor this to use class variables rather than reference calls
     if (moveProcess != nullptr) {
-        if (proTimer == moveProcessHistory.burstValue) {
+        if (proTimer == history.burstValue) {
             proTimer = 0;
             moveProcess->setSub(moveProcess->getSub() + 1);
         }
         if (isIoBurst) {
-            if (moveProcessHistory.burstLetter == INPUT_BURST_LETTER) {
+            if (history.burstLetter == INPUT_BURST_LETTER) {
                 moveProcess->setInputCount(moveProcess->getInputTotal() + 1);
-            } else if (moveProcessHistory.burstLetter == OUTPUT_BURST_LETTER) {
+            } else if (history.burstLetter == OUTPUT_BURST_LETTER) {
                 moveProcess->setOutputCount(moveProcess->getOutputCount() + 1);
             }
             // TODO: refactor this so that we don't need the isBurst argument
-            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isIoBurst);
+            moveToQueue(moveProcess, history.burstLetter, isIoBurst);
 
             // TODO: Restructure this method so that we don't exit early
             return;
         }
 
-        moveProcessHistory = getProcessHistory(moveProcess);
+        history = getProcessHistory(moveProcess);
 
-        if (moveProcessHistory.burstLetter == "N") {
+        if (history.burstLetter == "N") {
             moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
             terminateProcess(moveProcess);
             processesInUse--;
         } else {
             moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
-            moveToQueue(moveProcess, moveProcessHistory.burstLetter, isIoBurst);
+            moveToQueue(moveProcess, history.burstLetter, isIoBurst);
         }
     }
 }
@@ -124,19 +124,29 @@ void setProcessHistory(Process *process, const char *line) {
 
     strcpy(buffer, line);
 
+    cerr << "\tSetting temporary process history structure!" << endl;
     History *temp = process->history;
 
+    cerr << "\tTokenizing buffer!" << endl;
     char *burstInfo = strtok(buffer, " ");
 
     while (burstInfo != nullptr) {
+        cerr << "\t\tReading burst info!" << endl;
+
+        cerr << "\t\tCreating temporary History and assigning burst info letter" << endl;
         auto *temp2 = new History();
         temp2->burstLetter = burstInfo;
 
-        burstInfo = strtok(nullptr, " ");
-        temp2->burstValue = static_cast<unsigned int>(atoi(burstInfo));
-
+        cerr << "\t\tTokenizing burst info: " << temp2->burstLetter << endl;
         burstInfo = strtok(nullptr, " ");
 
+        cerr << "\t\tAssigning burst value to burst info: " << burstInfo << endl;
+        temp2->burstValue = atoi(burstInfo);
+
+        cerr << "\t\tTokenizing burst info..." << endl;
+        burstInfo = strtok(nullptr, " ");
+
+        cerr << "\t\tSetting element of temporary history element with the other temporary history!" << endl;
         temp[index] = *temp2;
         index++;
     }
@@ -150,34 +160,46 @@ void readFile() {
     string line;
     int startId = 100;
 
-    // TODO: replace with global constant
     ifstream inFile(IN_FILE_NAME);
 
+    cerr << "\tI retrieved the infile name!" << endl;
+
     if (inFile.fail()) {
-        cerr << "Could not open input text file!" << endl;
+        cerr << "\tCould not open input text file!" << endl;
         return;
     }
 
     getline(inFile, line);
     while (inFile) {
-        Process *temp = new Process();
+        cerr << "\t\tI'm reading the file!" << endl;
+
+        auto *temp = new Process();
         temp->setProcessId(startId);
 
+        cerr << "\t\tI'm about to set the current process!" << endl;
         setProcess(temp, line.c_str());
 
-        // TODO: replace with strcmp and string constant
         if (temp->getProcessName() == END_OF_FILE_MARKER) {
-            // TODO: add destructor to Process and call it here
-            delete (temp);
-            temp = nullptr;
+            cerr << "\t\tReached end of file!" << endl;
             break;
         }
 
+        cerr << "\t\tPushing new process into the entry queue!" << endl;
         entryQueue.push(temp);
 
+        cerr << "\t\tGetting the next line!" << endl;
         getline(inFile, line);
+
+        // TODO: The program segmentation faults here. Fix this!
+        cerr << "\t\tSetting the process history for this process!" << endl;
         setProcessHistory(temp, line.c_str());
+
+        if (!inFile.eof()) {
+            cerr << "\t\tGetting the next line again!" << endl;
+            getline(inFile, line);
+        }
     }
+    cerr << "\tI'm closing the file!" << endl;
     inFile.close();
 }
 
@@ -186,20 +208,20 @@ void terminateProcess(Process *&terminator) {
     terminator->printInfo();
     terminatedProcessCount++;
 
-    // TODO: use process destructor here
     delete terminator;
     terminator = nullptr;
 }
 
-bool condition(int time) {
+bool exitCondition(int time) {
+    // TODO: inspect this exit condition for efficacy
     return (time < MAX_TIME)
-           and (!entryQueue.empty()
-                or !readyQueue.empty()
-                or !inputQueue.empty()
-                or !outputQueue.empty()
-                or activeProcess != nullptr
-                or activeInputProcess != nullptr
-                or activeOutputProcess != nullptr);
+           or (!entryQueue.empty()
+               or !readyQueue.empty()
+               or !inputQueue.empty()
+               or !outputQueue.empty()
+               or activeProcess != nullptr
+               or activeInputProcess != nullptr
+               or activeOutputProcess != nullptr);
 }
 
 void activateProcess(Process *&process, priority_queue<Process *, vector<Process *>, Comparator> &activatorQueue) {
@@ -209,11 +231,10 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
     }
 }
 
-void moveToQueue(Process *&currentProcess, string queueName, bool readied) {
+void moveToQueue(Process *&currentProcess, const string &queueName, bool readied) {
     if (readied) {
         readyQueue.push(currentProcess);
     } else if (queueName == OUTPUT_BURST_LETTER) {
-        // TODO: replace queue name comparator with constant string and strcmp()
         outputQueue.push(currentProcess);
     } else if (queueName == INPUT_BURST_LETTER) {
         inputQueue.push(currentProcess);

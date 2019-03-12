@@ -29,8 +29,6 @@ private:
 
     unsigned sub = 0;
 
-    unsigned int ioTimer = 0;
-
     unsigned int cpuTotal = 0;
 
     unsigned int inputTotal = 0;
@@ -48,6 +46,8 @@ public:
     unsigned int cpuTimer = 0;
 
     ~Process();
+
+    unsigned int ioTimer = 0;
 
     void printInfo();
 

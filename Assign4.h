@@ -157,29 +157,27 @@ void setProcessHistory(Process *process, const char *line) {
 
     strcpy(buffer, line);
 
-    cerr << "\tSetting temporary process history structure!" << endl;
+    // Create temporary history structure
     History *temp = process->history;
 
-    cerr << "\tTokenizing buffer!" << endl;
+    // Tokenize the buffer using spaces
     char *burstInfo = strtok(buffer, " ");
 
     while (burstInfo != nullptr) {
-        cerr << "\t\tReading burst info!" << endl;
-
-        cerr << "\t\tCreating temporary History and assigning burst info letter" << endl;
+        // Read the burst info, creating new history structures
         auto *temp2 = new History();
         temp2->burstLetter = burstInfo;
 
-        cerr << "\t\tTokenizing burst info: " << temp2->burstLetter << endl;
+        // Tokenize the burst info using spaces
         burstInfo = strtok(nullptr, " ");
 
-        cerr << "\t\tAssigning burst value to burst info: " << burstInfo << endl;
+        // Give a value to the burst info using the tokenized buffer
         temp2->burstValue = atoi(burstInfo);
 
-        cerr << "\t\tTokenizing burst info..." << endl;
+        // Tokenize the burst info again
         burstInfo = strtok(nullptr, " ");
 
-        cerr << "\t\tSetting element of temporary history element with the other temporary history!" << endl;
+        // Assign the temporary buffer to the regular one and move to next line
         temp[index] = *temp2;
         index++;
     }
@@ -285,7 +283,8 @@ bool exitCondition(int time) {
 }
 
 /**
- * This function moves a given process to a given active priority queue.
+ * This function moves a given process to a given active priority queue, if the process
+ * is not null and the activator queue is not empty.
  *
  * @param process - the process to be moved to active queue
  * @param activatorQueue - the queue to be moved to

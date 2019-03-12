@@ -16,13 +16,13 @@ const unsigned MAX_TIME = 500;
 const unsigned QUEUE_SIZE = 20;
 const unsigned AT_ONCE = 5;
 const unsigned HOW_OFTEN = 25;
-
 const unsigned BUFFER_SIZE = 256;
 
 const char *IN_FILE_NAME = "data4.txt";
-const char *INPUT_BURST_LETTER = "I";
-const char *OUTPUT_BURST_LETTER = "O";
-const char *END_OF_FILE_MARKER = "STOPHERE";
+
+const string INPUT_BURST_LETTER = "I";
+const string OUTPUT_BURST_LETTER = "O";
+const string END_OF_FILE_MARKER = "STOPHERE";
 
 class Comparator {
 public:
@@ -222,8 +222,10 @@ void readFile() {
         // Set the current process
         setProcess(temp, line.c_str());
 
+        // Check for file end flag
         if (temp->getProcessName() == END_OF_FILE_MARKER) {
             cerr << "\t\tReached end of file!" << endl;
+            delete(temp);
             break;
         }
 
@@ -235,6 +237,8 @@ void readFile() {
 
         // Set the process history
         setProcessHistory(temp, line.c_str());
+
+        startId++;
 
         if (!inFile.eof()) {
             // Retrieve the next line if not the end of the file

@@ -108,5 +108,8 @@ int main() {
     cerr << "Total amount of CPU idle time: " << idleTimer << endl;
     cerr << "Number of processes terminated: " << terminatedProcessCount << endl;
 
+    // Print final report
+    printReport();
+
     return 0;
 }

@@ -82,29 +82,39 @@ unsigned timer = 0;
 void completeBurst(Process *&moveProcess, History history, unsigned &proTimer, int &processesInUse, bool isIoBurst) {
     // Check if the current process is active and if the burst timer is correct
     if (moveProcess != nullptr and proTimer == history.burstValue) {
+        // Default process timer to zero
         proTimer = 0;
+
+        // Increment the process' burst number
         moveProcess->setSub(moveProcess->getSub() + 1);
 
+        // Check if the process is an i/o process
         if (isIoBurst) {
             if (history.burstLetter == INPUT_BURST_LETTER) {
+                // Increment input counter if matched to burst letter
                 moveProcess->setInputCount(moveProcess->getInputTotal() + 1);
             } else if (history.burstLetter == OUTPUT_BURST_LETTER) {
+                // Increment output counter if matched to output letter
                 moveProcess->setOutputCount(moveProcess->getOutputCount() + 1);
             }
+
+            // Move the process into the active queue
             moveToQueue(moveProcess, history.burstLetter, true);
-
-            return;
-        }
-
-        history = getProcessHistory(moveProcess);
-
-        if (history.burstLetter == "N") {
-            moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
-            terminateProcess(moveProcess);
-            processesInUse--;
         } else {
-            moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
-            moveToQueue(moveProcess, history.burstLetter, isIoBurst);
+            // Otherwise, get the burst info for the process
+            history = getProcessHistory(moveProcess);
+
+            // Check for end of process marker
+            if (history.burstLetter == "N") {
+                // Terminate process and increase CPU count
+                moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
+                terminateProcess(moveProcess);
+                processesInUse--;
+            } else {
+                // Increment CPU count and move process to the corresponding queue
+                moveProcess->setCpuCount(moveProcess->getCpuCount() + 1);
+                moveToQueue(moveProcess, history.burstLetter, false);
+            }
         }
     }
 }

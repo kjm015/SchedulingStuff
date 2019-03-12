@@ -152,7 +152,7 @@ void setProcess(Process *process, const char *line) {
  * @param line - the line of information that will be used to set the process history.
  */
 void setProcessHistory(Process *process, const char *line) {
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     int index = 0;
 
     strcpy(buffer, line);

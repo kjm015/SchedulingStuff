@@ -18,6 +18,7 @@ int main() {
 
         // Pull processes from entry queue to ready queue and print result
         while (activeProcessCount < AT_ONCE and !entryQueue.empty()) {
+
             Process *movedProcess = entryQueue.front();
 
             if (movedProcess->getArrivalTime() > timer) {
@@ -26,7 +27,8 @@ int main() {
 
             entryQueue.pop();
 
-            cerr << "Process " << movedProcess->getProcessName() << " moved to the ready queue @ time " << timer
+            cerr << "Process " << movedProcess->getProcessName() << " with priority " << movedProcess->getPriority()
+                 << " moved to the ready queue @ time " << timer
                  << endl;
 
             movedProcess->setArrivalTime(timer);
@@ -48,10 +50,48 @@ int main() {
             History current = getProcessHistory(activeProcess);
             moveToQueue(activeProcess, current.burstLetter, false);
             completeBurst(activeProcess, current, activeProcess->cpuTimer, activeProcessCount, false);
+
+            if (activeProcess != nullptr) {
+                activeProcess->setCpuTotal(activeProcess->getCpuTotal() + 1);
+                activeProcess->cpuTimer++;
+            }
+        }
+
+        activateProcess(activeInputProcess, inputQueue);
+
+        if (activeInputProcess != nullptr) {
+            History currentHistory = getProcessHistory(activeInputProcess);
+
+            completeBurst(activeInputProcess, currentHistory, activeInputProcess->ioTimer, activeProcessCount, true);
+
+            if (activeInputProcess != nullptr) {
+                activeInputProcess->setInputTotal(activeInputProcess->getInputTotal() + 1);
+                activeInputProcess->ioTimer++;
+            }
+        }
+
+        activateProcess(activeOutputProcess, outputQueue);
+
+        if (activeOutputProcess != nullptr) {
+            History currentHistory = getProcessHistory(activeOutputProcess);
+
+            completeBurst(activeOutputProcess, currentHistory, activeOutputProcess->ioTimer, activeProcessCount, true);
+
+            if (activeOutputProcess != nullptr) {
+                activeOutputProcess->setOutputCount(activeOutputProcess->getOutputCount() + 1);
+                activeOutputProcess->ioTimer++;
+            }
         }
 
         timer++;
     }
+
+    cerr << endl << endl << "<-------------------------------------------------------->" << endl;
+    cerr << "Program ended at time: " << timer << endl;
+    cerr << "Total amount of CPU idle time: " << idleTimer << endl;
+    cerr << "Number of processes terminated: " << terminatedProcessCount << endl;
+
+    printReport();
 
     return 0;
 }

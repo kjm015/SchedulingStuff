@@ -75,6 +75,7 @@ void completeBurst(Process *&moveProcess, History history, unsigned &proTimer, i
             proTimer = 0;
             moveProcess->setSub(moveProcess->getSub() + 1);
         }
+
         if (isIoBurst) {
             if (history.burstLetter == INPUT_BURST_LETTER) {
                 moveProcess->setInputCount(moveProcess->getInputTotal() + 1);
@@ -82,7 +83,7 @@ void completeBurst(Process *&moveProcess, History history, unsigned &proTimer, i
                 moveProcess->setOutputCount(moveProcess->getOutputCount() + 1);
             }
             // TODO: refactor this so that we don't need the isBurst argument
-            moveToQueue(moveProcess, history.burstLetter, isIoBurst);
+            moveToQueue(moveProcess, history.burstLetter, true);
 
             // TODO: Restructure this method so that we don't exit early
             return;
@@ -215,7 +216,7 @@ void terminateProcess(Process *&terminator) {
 bool exitCondition(int time) {
     // TODO: inspect this exit condition for efficacy
     return (time < MAX_TIME)
-           or (!entryQueue.empty()
+           and (!entryQueue.empty()
                or !readyQueue.empty()
                or !inputQueue.empty()
                or !outputQueue.empty()
@@ -231,8 +232,8 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
     }
 }
 
-void moveToQueue(Process *&currentProcess, const string &queueName, bool readied) {
-    if (readied) {
+void moveToQueue(Process *&currentProcess, const string &queueName, bool isReady) {
+    if (isReady) {
         readyQueue.push(currentProcess);
     } else if (queueName == OUTPUT_BURST_LETTER) {
         outputQueue.push(currentProcess);

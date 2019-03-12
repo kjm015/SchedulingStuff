@@ -5,16 +5,14 @@ using namespace std;
 int main() {
     cerr << "Hello, world!" << endl;
 
+    // Read the incoming file
     readFile();
 
-    cerr << "I read the file!" << endl;
-
+    // Create runtime variables to track active processes and idle time
     int activeProcessCount = 0;
     int idleTimer = 0;
 
     while (exitCondition(timer)) {
-
-        cerr << "Starting the process loop!" << endl;
 
         // Pull processes from entry queue to ready queue and print result
         while (activeProcessCount < AT_ONCE and !entryQueue.empty()) {
@@ -42,13 +40,20 @@ int main() {
             printReport();
         }
 
+        // Activate a process
         activateProcess(activeProcess, readyQueue);
 
+        // Check if the process is available
         if (activeProcess == nullptr) {
             idleTimer++;
         } else {
+            // Retrieve the active process' burst info
             History current = getProcessHistory(activeProcess);
+
+            // Move the active process into the priority queue
             moveToQueue(activeProcess, current.burstLetter, false);
+
+            // Complete the queue
             completeBurst(activeProcess, current, activeProcess->cpuTimer, activeProcessCount, false);
 
             if (activeProcess != nullptr) {
@@ -86,11 +91,13 @@ int main() {
         timer++;
     }
 
+    // Give job termination information
     cerr << endl << endl << "<-------------------------------------------------------->" << endl;
     cerr << "Program ended at time: " << timer << endl;
     cerr << "Total amount of CPU idle time: " << idleTimer << endl;
     cerr << "Number of processes terminated: " << terminatedProcessCount << endl;
 
+    // Print final report
     printReport();
 
     return 0;

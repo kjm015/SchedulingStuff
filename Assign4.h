@@ -245,6 +245,12 @@ void readFile() {
     inFile.close();
 }
 
+/**
+ * This function will terminate a process.
+ * It will print out the process' info once it does so.
+ *
+ * @param terminator - the process to be terminated.
+ */
 void terminateProcess(Process *&terminator) {
     cerr << endl << "Process \"" << terminator->getProcessName() << "\" terminated at " << timer;
     terminator->printInfo();
@@ -255,6 +261,15 @@ void terminateProcess(Process *&terminator) {
     terminator = nullptr;
 }
 
+/**
+ * This function will return the conditional as to whether or not
+ * the current program should terminate.  In order for this condition to
+ * be met, the maximum timer must not be exceeded, and none of the queues can be empty.
+ *
+ * @param time - the current time
+ *
+ * @return whether or not the program should end
+ */
 bool exitCondition(int time) {
     return (time < MAX_TIME)
            and (!entryQueue.empty()
@@ -266,6 +281,12 @@ bool exitCondition(int time) {
                 or activeOutputProcess != nullptr);
 }
 
+/**
+ * This function moves a given process to a given active priority queue.
+ *
+ * @param process - the process to be moved to active queue
+ * @param activatorQueue - the queue to be moved to
+ */
 void activateProcess(Process *&process, priority_queue<Process *, vector<Process *>, Comparator> &activatorQueue) {
     if (process == nullptr and !activatorQueue.empty()) {
         process = activatorQueue.top();
@@ -273,6 +294,14 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
     }
 }
 
+/**
+ * This function moves a given process to a non-prioritized queue. Based on the queue's name and readiness,
+ * the process may be moved to a variety of different queues.
+ *
+ * @param currentProcess - the process to move into a queue
+ * @param isReady - whether or not the process should be moved to the ready queue
+ * @param queueName - the name of the queue to be moved to
+ */
 void moveToQueue(Process *&currentProcess, const string &queueName, bool isReady) {
     if (isReady) {
         readyQueue.push(currentProcess);
@@ -284,6 +313,10 @@ void moveToQueue(Process *&currentProcess, const string &queueName, bool isReady
     currentProcess = nullptr;
 }
 
+/**
+ * This function prints the contents of a given queue, including the processes that
+ * are contained within it. It will also print if the queue is empty.
+ */
 void printQueueContent(queue<Process *> q) {
     if (q.empty()) {
         cerr << "Empty queue!" << endl;
@@ -296,6 +329,10 @@ void printQueueContent(queue<Process *> q) {
     }
 }
 
+/**
+ * This function prints the contents of a given priority queue, including the processes that
+ * are contained within it. It will also print if the priority queue is empty.
+ */
 void printPriorityQueue(priority_queue<Process *, vector<Process *>, Comparator> pQueue) {
     if (pQueue.empty()) {
         cerr << "Empty priority queue!" << endl;
@@ -308,6 +345,12 @@ void printPriorityQueue(priority_queue<Process *, vector<Process *>, Comparator>
     }
 }
 
+/**
+ * This function prints out the contents of each active process.
+ * This occurs every given number of clock cycles, and displays
+ * relevant information regarding what each process is doing at
+ * any given time.
+ */
 void printProcessContent() {
     cerr << endl << "<----------------------------------------->" << endl;
     cerr << endl << "***** Status @ time: " << timer << " *****" << endl;
@@ -328,6 +371,10 @@ void printProcessContent() {
     }
 }
 
+/**
+ * This method prints the report of the processes and queues.
+ * That's pretty much it.
+ */
 void printReport() {
     printProcessContent();
 

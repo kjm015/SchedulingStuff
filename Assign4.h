@@ -20,9 +20,9 @@ const unsigned BUFFER_SIZE = 256;
 
 const char *IN_FILE_NAME = "data4.txt";
 
-const string INPUT_BURST_LETTER = "I";
-const string OUTPUT_BURST_LETTER = "O";
-const string END_OF_FILE_MARKER = "STOPHERE";
+string INPUT_BURST_LETTER = "I";
+string OUTPUT_BURST_LETTER = "O";
+string END_OF_FILE_MARKER = "STOPHERE";
 
 class Comparator {
 public:
@@ -308,12 +308,14 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
 void moveToQueue(Process *&currentProcess, const string &queueName, bool isReady) {
     if (isReady) {
         readyQueue.push(currentProcess);
+        currentProcess = nullptr;
     } else if (queueName == OUTPUT_BURST_LETTER) {
         outputQueue.push(currentProcess);
+        currentProcess = nullptr;
     } else if (queueName == INPUT_BURST_LETTER) {
         inputQueue.push(currentProcess);
+        currentProcess = nullptr;
     }
-    currentProcess = nullptr;
 }
 
 /**

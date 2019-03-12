@@ -20,9 +20,9 @@ const unsigned BUFFER_SIZE = 256;
 
 const char *IN_FILE_NAME = "data4.txt";
 
-const string INPUT_BURST_LETTER = "I";
-const string OUTPUT_BURST_LETTER = "O";
-const string END_OF_FILE_MARKER = "STOPHERE";
+string INPUT_BURST_LETTER = "I";
+string OUTPUT_BURST_LETTER = "O";
+string END_OF_FILE_MARKER = "STOPHERE";
 
 class Comparator {
 public:
@@ -152,34 +152,32 @@ void setProcess(Process *process, const char *line) {
  * @param line - the line of information that will be used to set the process history.
  */
 void setProcessHistory(Process *process, const char *line) {
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     int index = 0;
 
     strcpy(buffer, line);
 
-    cerr << "\tSetting temporary process history structure!" << endl;
+    // Create temporary history structure
     History *temp = process->history;
 
-    cerr << "\tTokenizing buffer!" << endl;
+    // Tokenize the buffer using spaces
     char *burstInfo = strtok(buffer, " ");
 
     while (burstInfo != nullptr) {
-        cerr << "\t\tReading burst info!" << endl;
-
-        cerr << "\t\tCreating temporary History and assigning burst info letter" << endl;
+        // Read the burst info, creating new history structures
         auto *temp2 = new History();
         temp2->burstLetter = burstInfo;
 
-        cerr << "\t\tTokenizing burst info: " << temp2->burstLetter << endl;
+        // Tokenize the burst info using spaces
         burstInfo = strtok(nullptr, " ");
 
-        cerr << "\t\tAssigning burst value to burst info: " << burstInfo << endl;
+        // Give a value to the burst info using the tokenized buffer
         temp2->burstValue = atoi(burstInfo);
 
-        cerr << "\t\tTokenizing burst info..." << endl;
+        // Tokenize the burst info again
         burstInfo = strtok(nullptr, " ");
 
-        cerr << "\t\tSetting element of temporary history element with the other temporary history!" << endl;
+        // Assign the temporary buffer to the regular one and move to next line
         temp[index] = *temp2;
         index++;
     }
@@ -260,7 +258,6 @@ void terminateProcess(Process *&terminator) {
 
     terminatedProcessCount++;
 
-    delete terminator;
     terminator = nullptr;
 }
 
@@ -285,7 +282,8 @@ bool exitCondition(int time) {
 }
 
 /**
- * This function moves a given process to a given active priority queue.
+ * This function moves a given process to a given active priority queue, if the process
+ * is not null and the activator queue is not empty.
  *
  * @param process - the process to be moved to active queue
  * @param activatorQueue - the queue to be moved to
@@ -308,12 +306,14 @@ void activateProcess(Process *&process, priority_queue<Process *, vector<Process
 void moveToQueue(Process *&currentProcess, const string &queueName, bool isReady) {
     if (isReady) {
         readyQueue.push(currentProcess);
+        currentProcess = nullptr;
     } else if (queueName == OUTPUT_BURST_LETTER) {
         outputQueue.push(currentProcess);
+        currentProcess = nullptr;
     } else if (queueName == INPUT_BURST_LETTER) {
         inputQueue.push(currentProcess);
+        currentProcess = nullptr;
     }
-    currentProcess = nullptr;
 }
 
 /**

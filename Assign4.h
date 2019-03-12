@@ -258,7 +258,6 @@ void terminateProcess(Process *&terminator) {
 
     terminatedProcessCount++;
 
-    // TODO: this is causing the program to crash, please fix
     terminator = nullptr;
 }
 
